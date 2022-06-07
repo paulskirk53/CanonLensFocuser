@@ -112,7 +112,7 @@ namespace ASCOM.CanonLens
             utilities = new Util(); //Initialise util object
             astroUtilities = new AstroUtils(); // Initialise astro-utilities object
             //TODO: Implement your additional construction here
-            // pk perhaps serial port
+            // todo pk perhaps serial port
             tl.LogMessage("Focuser", "Completed initialisation");
         }
 
