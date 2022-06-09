@@ -76,7 +76,7 @@ namespace ASCOM.CanonLens
         internal static string traceStateDefault = "false";
 
         internal static string comPort; // Variables to hold the current device configuration
-
+        internal static string focusercomPort;
         /// <summary>
         /// Private variable to hold the connected state
         /// </summary>
@@ -97,6 +97,8 @@ namespace ASCOM.CanonLens
         /// </summary>
         internal TraceLogger tl;
 
+        private ASCOM.Utilities.Serial focuserSerial;  //pk added
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CanonLens"/> class.
         /// Must be public for COM registration.
@@ -112,8 +114,10 @@ namespace ASCOM.CanonLens
             utilities = new Util(); //Initialise util object
             astroUtilities = new AstroUtils(); // Initialise astro-utilities object
             //TODO: Implement your additional construction here
-            // todo pk perhaps serial port
-            tl.LogMessage("Focuser", "Completed initialisation");
+            
+
+
+        tl.LogMessage("Focuser", "Completed initialisation");
         }
 
 
@@ -231,6 +235,78 @@ namespace ASCOM.CanonLens
                 }
             }
         }
+
+        // The following helper methods make the code more readable and eliminate redundant statements. 
+        // Notice that I also added a try/catch around the port connection to fail cleanly and log the failure. 
+        // I also added code to dispose and null each of the ports when they are closed.
+
+        private bool Connect()
+        {
+            tl.LogMessage("Connected Set", "Connecting to port " + focuserSerial);
+            //set the stepper motor connection
+            try
+            {
+                focuserSerial = OpenPort(focusercomPort);     //todo needs to reflect focuser context with var x
+
+             
+                return true;    //pk added cos of build error not all code paths return a value
+            }
+            catch (Exception ex)
+            {
+                tl.LogMessage("Connected Set", "Unable to connect to COM ports " + ex.ToString());
+
+                if (focuserSerial != null)
+                {
+                    DisconnectPort(focuserSerial);
+                }
+
+                
+                return false;   //pk added cos of build error not all code paths return a value
+
+            }
+
+
+        }
+
+       
+
+        private ASCOM.Utilities.Serial OpenPort(string portName)
+        {
+            ASCOM.Utilities.Serial port = new ASCOM.Utilities.Serial();
+            port.PortName = portName;
+            port.DTREnable = false;
+            port.RTSEnable = false;
+            port.ReceiveTimeout = 10000;
+
+            port.Speed = SerialSpeed.ps19200;
+            port.Connected = true;
+            port.ClearBuffers();
+
+            return port;
+        }
+
+        private void Disconnect()
+        {
+            // disconnect the hardware
+            DisconnectPort(focuserSerial);// need to put a port name in here
+            
+            
+            //           tl.LogMessage("Connected Set", "Disconnecting from port " + comPort);
+        }
+
+        private void DisconnectPort(ASCOM.Utilities.Serial port)
+        {
+            port.Connected = false;
+            port.Dispose();
+            port = null;
+        }
+
+
+
+        // end helper methods
+
+
+
 
         public string Description
         {
