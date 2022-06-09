@@ -366,7 +366,7 @@ namespace ASCOM.CanonLens
         #region IFocuser Implementation
 
         private int focuserPosition = 0; // Class level variable to hold the current focuser position
-        private const int focuserSteps = 10000;
+        private const int focuserSteps = 10000;    //todo PK added this todo  check out the implications of 10000 value
 
         public bool Absolute
         {
