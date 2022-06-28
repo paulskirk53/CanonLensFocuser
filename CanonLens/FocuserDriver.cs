@@ -76,7 +76,7 @@ namespace ASCOM.CanonLens
         internal static string traceStateDefault = "false";
 
         internal static string comPort; // Variables to hold the current device configuration
-        internal static string focusercomPort;
+        internal static string ComPortName = "COM3";  //todo change this perhaps to be picked from the setup dialog as per the dome driver
         /// <summary>
         /// Private variable to hold the connected state
         /// </summary>
@@ -225,28 +225,33 @@ namespace ASCOM.CanonLens
                 {
                     connectedState = true;
                     LogMessage("Connected Set", "Connecting to port {0}", comPort);
-                    // TODO connect to the device
+                    //  connect to the device
+                    Connect();
                 }
                 else
                 {
                     connectedState = false;
                     LogMessage("Connected Set", "Disconnecting from port {0}", comPort);
-                    // TODO disconnect from the device
+                    // disconnect from the device
+                    Disconnect();
                 }
             }
         }
 
-        // The following helper methods make the code more readable and eliminate redundant statements. 
-        // Notice that I also added a try/catch around the port connection to fail cleanly and log the failure. 
-        // I also added code to dispose and null each of the ports when they are closed.
+       
 
         private bool Connect()
         {
+
+            /*
+             * Note that the client code (test module for this driver in this solution file) 'connect button' checks the IsConnected property
+             * look at the connect button code to see how the various methods and properties to do with 'connection' are used. 
+             * */
             tl.LogMessage("Connected Set", "Connecting to port " + focuserSerial);
             //set the stepper motor connection
             try
             {
-                focuserSerial = OpenPort(focusercomPort);     //todo needs to reflect focuser context with var x
+                focuserSerial = OpenPort(ComPortName);     //todo needs to reflect focuser context with var x
 
              
                 return true;    //pk added cos of build error not all code paths return a value
@@ -272,33 +277,33 @@ namespace ASCOM.CanonLens
 
         private ASCOM.Utilities.Serial OpenPort(string portName)
         {
-            ASCOM.Utilities.Serial port = new ASCOM.Utilities.Serial();
-            port.PortName = portName;
-            port.DTREnable = false;
-            port.RTSEnable = false;
-            port.ReceiveTimeout = 10000;
+            //ASCOM.Utilities.Serial focuserSerial = new ASCOM.Utilities.Serial();
+            focuserSerial.PortName = portName;
+            focuserSerial.DTREnable = false;
+            focuserSerial.RTSEnable = false;
+            focuserSerial.ReceiveTimeout = 10000;
 
-            port.Speed = SerialSpeed.ps19200;
-            port.Connected = true;
-            port.ClearBuffers();
+            focuserSerial.Speed = SerialSpeed.ps19200;
+            focuserSerial.Connected = true;
+            focuserSerial.ClearBuffers();
 
-            return port;
+            return focuserSerial;
         }
 
         private void Disconnect()
         {
             // disconnect the hardware
-            DisconnectPort(focuserSerial);// need to put a port name in here
+            DisconnectPort(focuserSerial);  // need to put a port name in here
             
             
             //           tl.LogMessage("Connected Set", "Disconnecting from port " + comPort);
         }
 
-        private void DisconnectPort(ASCOM.Utilities.Serial port)
+        private void DisconnectPort(ASCOM.Utilities.Serial x)
         {
-            port.Connected = false;
-            port.Dispose();
-            port = null;
+            x.Connected = false;
+            x.Dispose();
+            x = null;
         }
 
 
