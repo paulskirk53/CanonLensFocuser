@@ -76,7 +76,7 @@ namespace ASCOM.CanonLens
         internal static string traceStateDefault = "false";
 
         internal static string comPort; // Variables to hold the current device configuration
-        internal static string ComPortName = "COM3";  //todo change this perhaps to be picked from the setup dialog as per the dome driver
+        
         /// <summary>
         /// Private variable to hold the connected state
         /// </summary>
@@ -251,7 +251,7 @@ namespace ASCOM.CanonLens
             //set the stepper motor connection
             try
             {
-                focuserSerial = OpenPort(ComPortName);     //todo needs to reflect focuser context with var x
+                focuserSerial = OpenPort(comPort);     //todo check comport
 
              
                 return true;    //pk added cos of build error not all code paths return a value
@@ -277,17 +277,17 @@ namespace ASCOM.CanonLens
 
         private ASCOM.Utilities.Serial OpenPort(string portName)
         {
-            //ASCOM.Utilities.Serial focuserSerial = new ASCOM.Utilities.Serial();
-            focuserSerial.PortName = portName;
-            focuserSerial.DTREnable = false;
-            focuserSerial.RTSEnable = false;
-            focuserSerial.ReceiveTimeout = 10000;
+            ASCOM.Utilities.Serial port = new ASCOM.Utilities.Serial();
+            port.PortName = portName;
+            port.DTREnable = false;
+            port.RTSEnable = false;
+            port.ReceiveTimeout = 10000;
 
-            focuserSerial.Speed = SerialSpeed.ps19200;
-            focuserSerial.Connected = true;
-            focuserSerial.ClearBuffers();
+            port.Speed = SerialSpeed.ps19200;
+            port.Connected = true;
+            port.ClearBuffers();
 
-            return focuserSerial;
+            return port;
         }
 
         private void Disconnect()
@@ -299,11 +299,11 @@ namespace ASCOM.CanonLens
             //           tl.LogMessage("Connected Set", "Disconnecting from port " + comPort);
         }
 
-        private void DisconnectPort(ASCOM.Utilities.Serial x)
+        private void DisconnectPort(ASCOM.Utilities.Serial port)
         {
-            x.Connected = false;
-            x.Dispose();
-            x = null;
+            port.Connected = false;
+            port.Dispose();
+            port = null;
         }
 
 
