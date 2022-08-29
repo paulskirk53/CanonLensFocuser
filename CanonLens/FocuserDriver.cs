@@ -213,27 +213,24 @@ namespace ASCOM.CanonLens
             get
             {
                 LogMessage("Connected", "Get {0}", IsConnected);
-                return IsConnected;
+                return connectedState;
             }
             set
             {
-                tl.LogMessage("Connected", "Set {0}", value);
-                if (value == IsConnected)
-                    return;
-
+                                
                 if (value)
                 {
-                    connectedState = true;
+                    connectedState = Connect();  //  connect to the device and return bool to connectedState
                     LogMessage("Connected Set", "Connecting to port {0}", comPort);
-                    //  connect to the device
-                    Connect();
+                  
                 }
                 else
                 {
-                    connectedState = false;
+                     Disconnect();  // disconnect from the device
+                     connectedState = false;
                     LogMessage("Connected Set", "Disconnecting from port {0}", comPort);
-                    // disconnect from the device
-                    Disconnect();
+                    
+                    
                 }
             }
         }
@@ -251,10 +248,15 @@ namespace ASCOM.CanonLens
             //set the stepper motor connection
             try
             {
-                focuserSerial = OpenPort(comPort);     //todo check comport
+                focuserSerial = OpenPort(comPort);     
+                //including a comms check here with the MCU to check the comms line actually works rather than the existence of the connection
+                focuserSerial.Transmit("querymcu");   // send this string to the focuser mcu and receive a response if all's well
+                string response = focuserSerial.ReceiveTerminated("#");
+                bool state = false;
+                if (response=="focuser")
+                { state = true; }
 
-             
-                return true;    //pk added cos of build error not all code paths return a value
+                return state;    //pk added cos of build error not all code paths return a value
             }
             catch (Exception ex)
             {
@@ -277,11 +279,12 @@ namespace ASCOM.CanonLens
 
         private ASCOM.Utilities.Serial OpenPort(string portName)
         {
+            // create the port object and set its properties...
             ASCOM.Utilities.Serial port = new ASCOM.Utilities.Serial();
             port.PortName = portName;
             port.DTREnable = false;
             port.RTSEnable = false;
-            port.ReceiveTimeout = 10000;
+            port.ReceiveTimeout = 5;
 
             port.Speed = SerialSpeed.ps19200;
             port.Connected = true;
@@ -571,8 +574,7 @@ namespace ASCOM.CanonLens
         {
             get
             {
-                // TODO check that the driver hardware connection exists and is connected to the hardware
-                //pk this might be a try catch to send info to the MCU and expect a return which sets connectedState
+                
                 return connectedState;
             }
         }

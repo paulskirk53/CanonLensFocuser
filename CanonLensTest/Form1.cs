@@ -33,6 +33,7 @@ namespace ASCOM.CanonLens
             if (IsConnected)
             {
                 driver.Connected = false;
+                lblconnectstatus.Text = IsConnected ? "connected" : "not Connected";   //pk inserted this line
             }
             else
             {
