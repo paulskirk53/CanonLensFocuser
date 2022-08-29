@@ -374,7 +374,7 @@ namespace ASCOM.CanonLens
         #region IFocuser Implementation
 
         private int focuserPosition = 0; // Class level variable to hold the current focuser position
-        private const int focuserSteps = 10000;    //todo PK added this todo  check out the implications of 10000 value
+        private const int focuserSteps = 30000;    //todo PK added this todo  check out the implications of 30000 value
 
         public bool Absolute
         {
@@ -396,7 +396,33 @@ namespace ASCOM.CanonLens
             get
             {
                 tl.LogMessage("IsMoving Get", false.ToString());
-                return false; // This focuser always moves instantaneously so no need for IsMoving ever to be True
+                //this comment line was in the ASCOM template. I have no idea what it means!.....// This focuser always moves instantaneously so no need for IsMoving ever to be True
+                try
+                {
+                    focuserSerial.ClearBuffers();                        // this cured the receive problem from Arduino in the dome code          
+
+                    focuserSerial.Transmit("statrep#");                  // accommodates the statrep process in the stepper arduino
+                }
+                catch (Exception ex)
+                {
+                    focuserSerial.ClearBuffers();
+
+                    focuserSerial.Transmit("statrep#");
+                    // log failure
+                    tl.LogMessage("Moving Get failed to Tx statrep#", ex.ToString());
+                }
+
+                string statrep_response = focuserSerial.ReceiveTerminated("#");        // read what's sent back
+                statrep_response = statrep_response.Replace("#", "");                  // remove the # mark
+                if (statrep_response == "Moving")                                      
+                  {
+                    return true;
+                  }
+                else
+                  {
+                    return false;
+                  }
+
             }
         }
 
@@ -436,6 +462,8 @@ namespace ASCOM.CanonLens
         {
             tl.LogMessage("Move", Position.ToString());
             focuserPosition = Position; // Set the focuser position
+            //pk added below to move the focuser
+            focuserSerial.Transmit("move" + Position.ToString() + "#");
         }
 
         public int Position
