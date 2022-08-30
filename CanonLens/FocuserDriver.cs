@@ -10,7 +10,7 @@
 //				dolores et ea rebum. Stet clita kasd gubergren, no sea takimata 
 //				sanctus est Lorem ipsum dolor sit amet.
 //
-// Implements:	ASCOM Focuser interface version: <To be completed by driver developer>
+// Implements:	ASCOM Focuser interface version: <3>
 // Author:		(XXX) Your N. Here <your@email.here>
 //
 // Edit Log:
@@ -250,10 +250,10 @@ namespace ASCOM.CanonLens
             {
                 focuserSerial = OpenPort(comPort);     
                 //including a comms check here with the MCU to check the comms line actually works rather than the existence of the connection
-                focuserSerial.Transmit("querymcu");   // send this string to the focuser mcu and receive a response if all's well
+                focuserSerial.Transmit("querymcu#");   // send this string to the focuser mcu and receive a response if all's well
                 string response = focuserSerial.ReceiveTerminated("#");
                 bool state = false;
-                if (response=="focuser")
+                if (response=="focuser#")
                 { state = true; }
 
                 return state;    //pk added cos of build error not all code paths return a value
@@ -284,7 +284,7 @@ namespace ASCOM.CanonLens
             port.PortName = portName;
             port.DTREnable = false;
             port.RTSEnable = false;
-            port.ReceiveTimeout = 5;
+            port.ReceiveTimeout = 10;
 
             port.Speed = SerialSpeed.ps19200;
             port.Connected = true;
@@ -373,7 +373,7 @@ namespace ASCOM.CanonLens
 
         #region IFocuser Implementation
 
-        private int focuserPosition = 0; // Class level variable to hold the current focuser position
+        private int focuserPosition = 5000; // Class level variable to hold the current focuser position
         private const int focuserSteps = 30000;    //todo PK added this todo  check out the implications of 30000 value
 
         public bool Absolute

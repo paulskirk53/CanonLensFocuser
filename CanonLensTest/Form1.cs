@@ -39,7 +39,7 @@ namespace ASCOM.CanonLens
             {
                 driver = new ASCOM.DriverAccess.Focuser(Properties.Settings.Default.DriverId);
                 driver.Connected = true;
-                lblconnectstatus.Text = IsConnected ? "connected" : "not Connected";   //pk inserted this line
+                lblconnectstatus.Text =  IsConnected ? "connected" : "not Connected";   //pk inserted this line
             }
             SetUIState();
         }
