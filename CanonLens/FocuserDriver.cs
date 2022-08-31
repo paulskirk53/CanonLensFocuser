@@ -248,34 +248,36 @@ namespace ASCOM.CanonLens
             //set the stepper motor connection
             try
             {
-                focuserSerial = OpenPort(comPort);     
+                focuserSerial = OpenPort(comPort);
                 //including a comms check here with the MCU to check the comms line actually works rather than the existence of the connection
-                focuserSerial.Transmit("querymcu#");   // send this string to the focuser mcu and receive a response if all's well
-                string response = focuserSerial.ReceiveTerminated("#");
-                bool state = false;
-                if (response=="focuser#")
-                { state = true; }
 
-                return state;    //pk added cos of build error not all code paths return a value
+
+                return querymcu(false);   
             }
+            
             catch (Exception ex)
             {
                 tl.LogMessage("Connected Set", "Unable to connect to COM ports " + ex.ToString());
 
-                if (focuserSerial != null)
-                {
-                    DisconnectPort(focuserSerial);
-                }
 
-                
-                return false;   //pk added cos of build error not all code paths return a value
-
+                  return querymcu(false);
             }
 
 
         }
 
-       
+       private bool querymcu(bool state)
+        {
+
+            focuserSerial.ClearBuffers();
+            focuserSerial.Transmit("querymcu#");   // send this string to the focuser mcu and receive a response if all's well
+            string response = focuserSerial.ReceiveTerminated("#");
+            state = false;
+            if (response == "focuser#")
+            { state = true; }
+
+            return state;
+        }
 
         private ASCOM.Utilities.Serial OpenPort(string portName)
         {
@@ -284,7 +286,7 @@ namespace ASCOM.CanonLens
             port.PortName = portName;
             port.DTREnable = false;
             port.RTSEnable = false;
-            port.ReceiveTimeout = 10;
+            port.ReceiveTimeout = 5;
 
             port.Speed = SerialSpeed.ps19200;
             port.Connected = true;
@@ -373,8 +375,8 @@ namespace ASCOM.CanonLens
 
         #region IFocuser Implementation
 
-        private int focuserPosition = 5000; // Class level variable to hold the current focuser position
-        private const int focuserSteps = 30000;    //todo PK added this todo  check out the implications of 30000 value
+        private int focuserPosition = 5000;        // Class level variable to hold the current focuser position todo check that 5000 is a useful initial setting
+        private const int focuserSteps = 30000;    // todo PK added this todo  check out the implications of 30000 value
 
         public bool Absolute
         {
@@ -387,8 +389,22 @@ namespace ASCOM.CanonLens
 
         public void Halt()
         {
-            tl.LogMessage("Halt", "Not implemented");
-            throw new ASCOM.MethodNotImplementedException("Halt");
+            // query the MCU to find out the current position, return it and set focuserposition
+            // 
+            tl.LogMessage("halt", "Not implemented");
+            //throw new ASCOM.MethodNotImplementedException("Halt");
+
+            try
+            { 
+              focuserSerial.Transmit("halt#");
+              string fpos = focuserSerial.ReceiveTerminated("#");
+              fpos = fpos.Replace("#", "");
+              bool success = int.TryParse(fpos, out focuserPosition);
+            }
+            catch
+            {
+                focuserPosition =0;   
+            }
         }
 
         public bool IsMoving
