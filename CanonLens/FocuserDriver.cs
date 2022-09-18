@@ -17,9 +17,9 @@
 //
 // Date			Who	Vers	Description
 // -----------	---	-----	-------------------------------------------------------
-// dd-mmm-yyyy	XXX	6.0.0	Initial edit, created from ASCOM driver template
+// 30-Aug-2022	PSK	6.0.0	Initial edit, created from ASCOM driver template
 // --------------------------------------------------------------------------------
-//
+// See Github for versions and history https://github.com/paulskirk53/CanonLensFocuser
 
 
 // This is used to define code in the template that is specific to one class implementation
