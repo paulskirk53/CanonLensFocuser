@@ -270,7 +270,7 @@ namespace ASCOM.CanonLens
         {
 
             focuserSerial.ClearBuffers();
-            focuserSerial.Transmit("querymcu#");   // send this string to the focuser mcu and receive a response if all's well
+            focuserSerial.Transmit("focuser#");   // send this string to the focuser mcu and receive a response if all's well
             string response = focuserSerial.ReceiveTerminated("#");
             state = false;
             if (response == "focuser#")

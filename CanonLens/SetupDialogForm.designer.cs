@@ -35,6 +35,7 @@ namespace ASCOM.CanonLens
             this.label2 = new System.Windows.Forms.Label();
             this.chkTrace = new System.Windows.Forms.CheckBox();
             this.comboBoxComPort = new System.Windows.Forms.ComboBox();
+            this.LBLcomPort = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.picASCOM)).BeginInit();
             this.SuspendLayout();
             // 
@@ -68,7 +69,7 @@ namespace ASCOM.CanonLens
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(123, 31);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Construct your driver\'s setup dialog here.";
+            this.label1.Text = "Gower Observatory Focuser";
             // 
             // picASCOM
             // 
@@ -111,11 +112,21 @@ namespace ASCOM.CanonLens
             this.comboBoxComPort.Size = new System.Drawing.Size(90, 21);
             this.comboBoxComPort.TabIndex = 7;
             // 
+            // LBLcomPort
+            // 
+            this.LBLcomPort.AutoSize = true;
+            this.LBLcomPort.Location = new System.Drawing.Point(78, 63);
+            this.LBLcomPort.Name = "LBLcomPort";
+            this.LBLcomPort.Size = new System.Drawing.Size(126, 13);
+            this.LBLcomPort.TabIndex = 8;
+            this.LBLcomPort.Text = "The Focuser Com Port is ";
+            // 
             // SetupDialogForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(350, 175);
+            this.Controls.Add(this.LBLcomPort);
             this.Controls.Add(this.comboBoxComPort);
             this.Controls.Add(this.chkTrace);
             this.Controls.Add(this.label2);
@@ -145,5 +156,6 @@ namespace ASCOM.CanonLens
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox chkTrace;
         private System.Windows.Forms.ComboBox comboBoxComPort;
+        private System.Windows.Forms.Label LBLcomPort;
     }
 }
